@@ -33,3 +33,21 @@ Notes:
 - Source names rarely appear (55 reviews), so they cannot move the score much despite high coefficients.
 - Place/hotel names may contribute about one point of macro-F1.
 - Not tested: whether the model learns "Mechanical Turk style vs web style" instead of deception. Needs a deceptive set from another source.
+
+## 2026-11-01 - TF-IDF vs DistilBERT, GroupKFold by hotel (5 folds)
+
+- Same 5 folds for all models. DistilBERT (distilbert-base-uncased): max_len 256, batch 16, 3 epochs, lr 2e-5, AdamW wd 0.01, seed 42 (single seed). Input: text only.
+- Files: results_5fold.csv, predictions_5fold.csv
+
+| Model | macro-F1 | false positive rate (truthful flagged deceptive) |
+| --- | --- | --- |
+| TF-IDF + LogReg | 0.870 +/- 0.017 | 0.108 +/- 0.016 |
+| TF-IDF + LinearSVC | 0.884 +/- 0.021 | 0.095 +/- 0.029 |
+| DistilBERT | 0.885 +/- 0.017 | 0.152 +/- 0.044 |
+
+Notes:
+- DistilBERT vs SVM: mean diff +0.001, per-fold diffs change sign (+0.002, -0.022, +0.021, -0.019, +0.022). No evidence of a difference.
+- DistilBERT vs LogReg: >= 0 in all 5 folds, mean +0.015. Suggestive, not conclusive (5 correlated folds).
+- DistilBERT flags more truthful reviews as deceptive (15% vs ~10%).
+- Limits: single seed, no hyperparameter tuning, 256-token truncation, all deceptive reviews from one source (MTurk).
+- H1 not supported vs SVM; weakly suggested vs LogReg.
